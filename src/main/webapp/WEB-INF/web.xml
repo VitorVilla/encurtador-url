@@ -7,9 +7,9 @@
 
     <display-name>encurtador-url</display-name>
 
-    <!-- Frontend simples servido na raiz do contexto -->
+    <!-- Frontend React (single-file) servido na raiz do contexto -->
     <welcome-file-list>
-        <welcome-file>index.jsp</welcome-file>
+        <welcome-file>index.html</welcome-file>
     </welcome-file-list>
 
 </web-app>
