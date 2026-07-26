@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<persistence xmlns="http://xmlns.jcp.org/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="
+                http://xmlns.jcp.org/xml/ns/persistence
+                http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd"
+             version="2.1">
+
+    <!--
+        transaction-type="JTA": quem gerencia a transacao e o WildFly.
+        O EntityManager e injetado com @PersistenceContext e o commit/rollback
+        acontece automaticamente ao redor de metodos @Transactional (ou EJB).
+    -->
+    <persistence-unit name="encurtadorPU" transaction-type="JTA">
+
+        <!--
+            Datasource H2 em memoria que JA VEM configurado no WildFly 10.
+            Nao precisamos declarar driver/url/usuario/senha aqui: isso mora
+            na configuracao do servidor (standalone.xml), acessado por JNDI.
+        -->
+        <jta-data-source>java:jboss/datasources/ExampleDS</jta-data-source>
+
+        <class>com.topaz.encurtador.model.ShortUrl</class>
+
+        <properties>
+            <!-- Dialeto do H2 para o Hibernate gerar o SQL correto -->
+            <property name="hibernate.dialect"
+                      value="org.hibernate.dialect.H2Dialect"/>
+
+            <!-- Cria/atualiza as tabelas a partir das entidades no deploy -->
+            <property name="hibernate.hbm2ddl.auto"
+                      value="update"/>
+
+            <!-- Loga o SQL no console (util em desenvolvimento) -->
+            <property name="hibernate.show_sql"
+                      value="true"/>
+
+            <property name="hibernate.format_sql"
+                      value="true"/>
+        </properties>
+
+    </persistence-unit>
+
+</persistence>
