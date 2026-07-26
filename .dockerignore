@@ -1,0 +1,8 @@
+# Nao enviar para o contexto de build do Docker (deixa o build mais rapido/limpo)
+target/
+.git/
+.idea/
+*.iml
+.mvn/
+*.pptx
+README.md

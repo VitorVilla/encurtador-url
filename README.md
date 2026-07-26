@@ -18,6 +18,7 @@ deliberadamente deixei de fora — listo elas lá no final.
 - WildFly 10
 - React no frontend (via CDN, sem build)
 - JUnit 4 + Mockito nos testes
+- Docker (opcional, pra rodar sem instalar nada)
 
 ## Como rodar
 
@@ -51,6 +52,20 @@ E os testes:
 ```bash
 mvn test
 ```
+
+### Rodando com Docker (a via mais fácil)
+
+Se você tiver Docker, nem precisa de Java ou WildFly instalados. Um comando só:
+
+```bash
+docker compose up --build
+```
+
+Quando terminar, a aplicação está em `http://localhost:8080/encurtador-url/`.
+
+O `Dockerfile` é multi-stage: um estágio com Maven compila o `.war`, e o estágio
+final é o WildFly 10 oficial, que já recebe o artefato pronto e sobe com o `ExampleDS`
+de sempre. A imagem final não carrega o Maven junto.
 
 ## A API
 
@@ -180,10 +195,21 @@ frontend na raiz.
 
 ### Tratamento de erros
 
-As regras de negócio lançam exceções semânticas (`InvalidUrlException`,
-`AliasAlreadyInUseException`, etc.) sem saber nada de HTTP. Quem traduz isso pra
-status code e JSON são os `ExceptionMapper` na camada web. Assim o service fica
-limpo e o contrato de erro fica consistente e num lugar só.
+As regras de negócio lançam exceções semânticas que herdam de uma base
+`BusinessException`, a qual carrega o status HTTP correspondente. Um único
+`BusinessExceptionMapper` traduz todas elas pra JSON — o RESTEasy resolve subindo
+a hierarquia (`AliasAlreadyInUseException` → `BusinessException` → mapper). Assim o
+contrato de erro fica consistente e num lugar só.
+
+Duas pegadinhas do WildFly que só apareceram testando dentro do container (e que
+reforçam o valor de testar no ambiente real, não só com mock):
+
+- Exceção lançada de dentro de um EJB é embrulhada em `EJBException` por padrão,
+  virando 500. Resolvi anotando a base com `@ApplicationException(rollback = true,
+  inherited = true)`, que faz o container propagar a exceção intacta.
+- Nessa versão do RESTEasy (3.0.x), registrar um `ExceptionMapper` por tipo se
+  mostrou pouco confiável — um dos mappers simplesmente não era resolvido. Consolidar
+  num mapper de base resolveu de vez e ainda deixou o código mais enxuto.
 
 ### Frontend em React sem build
 

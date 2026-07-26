@@ -1,0 +1,7 @@
+# Atalho para subir a aplicacao com um comando so: docker compose up --build
+services:
+  app:
+    build: .
+    container_name: encurtador-url
+    ports:
+      - "8080:8080"
