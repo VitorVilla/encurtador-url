@@ -1,8 +1,12 @@
 package com.topaz.encurtador.exception;
 
-public class AliasAlreadyInUseException extends RuntimeException {
+import javax.ws.rs.core.Response;
+
+/** Alias solicitado ja em uso (ou reservado) -> HTTP 409. */
+public class AliasAlreadyInUseException extends BusinessException {
 
     public AliasAlreadyInUseException(String alias) {
-        super("O alias '" + alias + "' ja esta em uso.");
+        super(Response.Status.CONFLICT.getStatusCode(),
+                "O alias '" + alias + "' ja esta em uso.");
     }
 }

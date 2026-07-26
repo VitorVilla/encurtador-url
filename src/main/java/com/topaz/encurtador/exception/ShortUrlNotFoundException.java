@@ -1,8 +1,12 @@
 package com.topaz.encurtador.exception;
 
-public class ShortUrlNotFoundException extends RuntimeException {
+import javax.ws.rs.core.Response;
+
+/** Nenhum registro corresponde ao codigo curto informado -> HTTP 404. */
+public class ShortUrlNotFoundException extends BusinessException {
 
     public ShortUrlNotFoundException(String shortCode) {
-        super("Nenhuma URL encontrada para o codigo '" + shortCode + "'.");
+        super(Response.Status.NOT_FOUND.getStatusCode(),
+                "Nenhuma URL encontrada para o codigo '" + shortCode + "'.");
     }
 }
